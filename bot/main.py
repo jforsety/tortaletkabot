@@ -7,9 +7,9 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
-from config import TOKEN_BOT, CHANNEL_ID
-from markups import check_sub_menu
-from text_bot.text import start_text, not_sub_message
+from bot.config import TOKEN_BOT, CHANNEL_ID
+from bot.markups import check_sub_menu
+from bot.text_bot.text import start_text, not_sub_message
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
