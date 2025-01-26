@@ -8,6 +8,7 @@ from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
 from config import TOKEN_BOT, CHANNEL_ID
+from markups import check_sub_menu
 from text_bot.text import start_text, not_sub_message
 
 # Включаем логирование, чтобы не пропустить важные сообщения
@@ -39,7 +40,7 @@ async def cmd_start(message: types.Message):
         if check_sub_channel(await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=message.from_user.id)):
             await message.answer(start_text)
         else:
-            await message.answer(not_sub_message)
+            await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
 
 # Запуск процесса поллинга новых апдейтов
