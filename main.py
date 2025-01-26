@@ -8,6 +8,7 @@ from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
 from config import TOKEN_BOT
+from text_bot.text import start_text
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -26,7 +27,7 @@ dp = Dispatcher()
 # Хэндлер на команду /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    await message.answer("Hello!")
+    await message.answer(start_text)
 
 
 # Запуск процесса поллинга новых апдейтов
