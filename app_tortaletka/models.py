@@ -6,7 +6,7 @@ class Client(models.Model):
     first_name = models.CharField(max_length=30, verbose_name='Имя')
     last_name = models.CharField(max_length=30, verbose_name='Фамилия')
     username = models.CharField(max_length=30, verbose_name='nickname')
-    attempt = models.IntegerField(default=0, verbose_name='Попытки')
+    attempt = models.IntegerField(default=10, verbose_name='Попытки')
     premium_status = models.BooleanField(default=0, verbose_name='Премиум статус')
     referrals = models.IntegerField(default=0, verbose_name='Рефералы')
     date_registration = models.DateTimeField(auto_now_add=True, verbose_name='Дата регистрации')
