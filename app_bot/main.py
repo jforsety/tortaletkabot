@@ -7,9 +7,9 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
-from bot.config import TOKEN_BOT, CHANNEL_ID
-from bot.markups import check_sub_menu
-from bot.text_bot.text import start_text, not_sub_message, manual_text
+from app_bot.config import TOKEN_BOT, CHANNEL_ID
+from app_bot.markups import check_sub_menu, instruction_btn
+from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -43,12 +43,12 @@ async def cmd_start(message: types.Message):
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
 
-# Хэндлер на команду /manual
-@dp.message(Command("manual"))
-async def cmd_manual(message: types.Message):
+# Хэндлер на команду /instruction
+@dp.message(Command("instruction"))
+async def cmd_instruction(message: types.Message):
     if message.chat.type == 'private':
         if check_sub_channel(await bot.get_chat_member(chat_id=CHANNEL_ID, user_id=message.from_user.id)):
-            await message.answer(manual_text)
+            await message.answer(instruction_text, reply_markup=instruction_btn)
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
 

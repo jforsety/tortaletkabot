@@ -6,7 +6,8 @@ inline_start = [[btn_url_channel]]
 check_sub_menu = InlineKeyboardMarkup(inline_keyboard=inline_start)
 
 btn_invite = InlineKeyboardButton(text="📤Пригласить друга", url=URL_INVITE)
-
+btn_instruction_list = [[btn_invite]]
+instruction_btn = InlineKeyboardMarkup(inline_keyboard=btn_instruction_list)
 
 
 
