@@ -5,6 +5,6 @@ from .models import Client
 
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
-    list_display = ("external_id", "last_name", "first_name","username", "attempt")
-    list_filter = ("last_name", "first_name","username", "attempt")
-    fields = ("last_name", "first_name","username", "attempt")
+    list_display = ("external_id", "first_name","username", "attempt", "last_date")
+    list_filter = ("first_name","username", "attempt")
+    fields = ("first_name","username", "attempt")
