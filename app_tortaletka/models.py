@@ -13,6 +13,6 @@ class Client(models.Model):
     last_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата активности')
 
     class Meta:
-        verbose_name = 'Клиенты'
-        verbose_name_plural = 'Клиенты'
+        verbose_name = 'Пользователи бота'
+        verbose_name_plural = 'Пользователи бота'
         ordering = ['date_registration']
