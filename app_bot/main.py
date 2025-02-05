@@ -9,7 +9,7 @@ from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
 from app_bot.database import add_user, profile_exists
-from app_bot.markups import check_sub_menu, instruction_btn
+from app_bot.markups import check_sub_menu, instruction_btn, get_referral_keyboard
 from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
 
 # Включаем логирование, чтобы не пропустить важные сообщения
@@ -57,13 +57,20 @@ async def cmd_instruction(message: types.Message):
 # Хэндлер на команду /profile
 @dp.message(Command("profile"))
 async def cmd_profile(message: types.Message):
+    keyboard = get_referral_keyboard(
+        user_id=message.from_user.id,
+        bot_url=os.environ.get("URL_BOT")
+    )
     if message.chat.type == 'private':
         if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
             profile_list = profile_exists(message)
-            await message.answer(text=f"<b>👤Профиль пользователя:</b>\n\n<b>ID:</b> {profile_list[0][1]}\n<b>Имя:</b> {profile_list[0][2]}\n<b"
-                                      f">Рефералы:</b> {profile_list[0][6]}\n<b>Подписка:</b> {profile_list[0][5]}\n<b>Попытки:</b> {profile_list[0][4]}\n"
+            await message.answer(text=f"<b>👤Профиль пользователя:</b>\n\n"
+                                      f"<b>ID:</b> {profile_list[0][1]}\n"
+                                      f"<b>Имя:</b> {profile_list[0][2]}\n"
+                                      f"<b>Рефералы:</b> {profile_list[0][6]}\n"
+                                      f"<b>Подписка:</b> {profile_list[0][5]}\n"
+                                      f"<b>Попытки:</b> {profile_list[0][4]}\n"
                                       f"<i>*За каждого приглашенного друга"
-                                      f"даётся 5 бесплатных запросов*</i>")
+                                      f"даётся 5 бесплатных запросов*</i>", reply_markup=keyboard)
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
-
