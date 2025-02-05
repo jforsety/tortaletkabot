@@ -9,18 +9,14 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
-from app_bot.config import CHANNEL_ID, TOKEN_BOT
 from app_bot.database import add_user
 from app_bot.markups import check_sub_menu, instruction_btn
 from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
 
 # Включаем логирование, чтобы не пропустить важные сообщения
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+                    filename='./app_bot/Logs_bot/tortaletka_bot.log')
 logger = logging.getLogger(__name__)
-# настроем логирование в файл в формате JSON
-logHandler = logging.FileHandler('./app_bot/Logs_bot/tortaletka_bot.log')
-formatter = jsonlogger.JsonFormatter('%(asctime)s %(levelname)s %(message)s')
-logHandler.setFormatter(formatter)
 
 load_dotenv()
 # Объект бота
@@ -30,7 +26,7 @@ bot = Bot(token=os.environ.get("TOKEN_BOT"), default=DefaultBotProperties(parse_
 dp = Dispatcher()
 
 
-#Функция проверки подписки на канал
+# Функция проверки подписки на канал
 def check_sub_channel(chat_member):
     if chat_member.status != 'left':
         return True
@@ -58,7 +54,3 @@ async def cmd_instruction(message: types.Message):
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
-
-# @dp.message(Command("get_chat_id"))
-# async def get_chat_id(message: types.Message):
-#     await message.answer(text=f"ID: {message.chat.id}")
