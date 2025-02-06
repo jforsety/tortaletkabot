@@ -37,3 +37,9 @@ def profile_attempts(message):
     result = cursor.execute("SELECT `attempt` FROM `app_tortaletka_client` WHERE `external_id` = ?",
                             (message.from_user.id,)).fetchone()
     return result
+
+
+def referral_reg(message,referral_id: int):
+    """Добавление информации о регистрации реферала и добавление попыток"""
+    cursor.execute("UPDATE app_tortaletka_client SET attempt=attempt + 5, referrals=referrals + 1 WHERE external_id=?",(referral_id,))
+    database.commit()
