@@ -8,9 +8,10 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
+from app_bot.api_ai import start_gigachat
 from app_bot.database import add_user, profile_exists, referral_reg
-from app_bot.markups import check_sub_menu, instruction_btn, get_referral_keyboard
-from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
+from app_bot.keyboards import check_sub_menu, instruction_btn, get_referral_keyboard
+from app_bot.text_bot.text import start_text, not_sub_message, instruction_text, api_message
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -77,9 +78,15 @@ async def cmd_profile(message: types.Message):
                                       f"<b>ID:</b> {profile_list[0][1]}\n"
                                       f"<b>Имя:</b> {profile_list[0][2]}\n"
                                       f"<b>Рефералы:</b> {profile_list[0][6]}\n"
-                                      f"<b>Подписка:</b> {profile_list[0][5]}\n"
+                                      # f"<b>Подписка:</b> {profile_list[0][5]}\n"
                                       f"<b>Попытки:</b> {profile_list[0][4]}\n"
                                       f"<i>*За каждого приглашенного друга "
-                                      f"даётся 5 бесплатных запросов*</i>", reply_markup=keyboard)
+                                      f"даётся 10 бесплатных запросов*</i>", reply_markup=keyboard)
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
+
+
+@dp.message()
+async def message_handler(message: types.Message):
+    await message.answer(start_gigachat(message),parse_mode="Markdown")
+
