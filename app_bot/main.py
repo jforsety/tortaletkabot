@@ -34,7 +34,6 @@ def check_sub_channel(chat_member):
         return False
 
 
-# Хэндлер на команду /start
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     referral_id = None
@@ -50,7 +49,6 @@ async def cmd_start(message: types.Message):
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
 
-# Хэндлер на команду /instruction
 @dp.message(Command("instruction"))
 async def cmd_instruction(message: types.Message):
     keyboard = get_referral_keyboard(
@@ -64,7 +62,6 @@ async def cmd_instruction(message: types.Message):
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
 
-# Хэндлер на команду /profile
 @dp.message(Command("profile"))
 async def cmd_profile(message: types.Message):
     keyboard = get_referral_keyboard(
@@ -88,5 +85,6 @@ async def cmd_profile(message: types.Message):
 
 @dp.message()
 async def message_handler(message: types.Message):
-    await message.answer(start_gigachat(message),parse_mode="Markdown")
+    if message.chat.type == 'private':
+        await message.answer(start_gigachat(message),parse_mode="Markdown")
 
