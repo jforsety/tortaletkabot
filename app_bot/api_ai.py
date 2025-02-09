@@ -9,7 +9,7 @@ from app_bot.database import profile_attempts, edit_attempts
 
 def start_gigachat(message):
     attempt_user = profile_attempts(message)
-    if attempt_user is not None:
+    if attempt_user[0] > 0:
         # Авторизация в GigaChat
         model = GigaChat(
             credentials=os.environ.get("AUTHORIZATION_KEY"),
@@ -33,3 +33,5 @@ def start_gigachat(message):
         messages.append(res)
         edit_attempts(message)
         return f"{res.content}\n\nНажмите /reset, чтобы сбросить историю запросов."
+    else:
+        return "😢 Ваши попытки закончились"
