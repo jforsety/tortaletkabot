@@ -7,6 +7,13 @@ from langchain_gigachat.chat_models import GigaChat
 from app_bot.database import profile_attempts, edit_attempts
 
 
+messages = [
+            SystemMessage(
+                content="Ты эмпатичный бот, профессионал, который помогает пользователю решить его проблемы."
+            )
+        ]
+
+
 def start_gigachat(message):
     attempt_user = profile_attempts(message)
     if attempt_user[0] > 0:
@@ -19,15 +26,10 @@ def start_gigachat(message):
             verify_ssl_certs=False,
         )
 
-        messages = [
-            SystemMessage(
-                content="Ты эмпатичный бот, профессионал, который помогает пользователю решить его проблемы."
-            )
-        ]
-
         user_input = message.text
         if user_input == "/reset":
-            return
+            messages.clear()
+            return "Ваш контекст был успешно сброшен."
         messages.append(HumanMessage(content=user_input))
         res = model.invoke(messages)
         messages.append(res)
