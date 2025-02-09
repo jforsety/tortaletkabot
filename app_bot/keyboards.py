@@ -1,5 +1,5 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from app_bot.config import URL_CHANNEL, URL_INVITE
+from app_bot.config import URL_CHANNEL
 
 
 btn_url_channel = InlineKeyboardButton(text="ПОДПИСАТЬСЯ", url=URL_CHANNEL)

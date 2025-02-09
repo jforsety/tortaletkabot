@@ -86,5 +86,8 @@ async def cmd_profile(message: types.Message):
 @dp.message()
 async def message_handler(message: types.Message):
     if message.chat.type == 'private':
-        await message.answer(start_gigachat(message),parse_mode="Markdown")
+        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
+            await message.answer(start_gigachat(message),parse_mode="Markdown")
+        else:
+            await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
