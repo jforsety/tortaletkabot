@@ -52,4 +52,9 @@ def edit_attempts(message):
     database.commit()
 
 
+def update_attempts(message):
+    """Обновление попыток пользователя"""
+    cursor.execute("UPDATE app_tortaletka_client SET attempt = 15 WHERE external_id=?",
+                            (message.from_user.id,))
+    database.commit()
 
