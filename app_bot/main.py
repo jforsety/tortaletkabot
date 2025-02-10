@@ -11,7 +11,7 @@ from aiogram.filters.command import Command
 from app_bot.api_ai import start_gigachat
 from app_bot.database import add_user, profile_exists, referral_reg
 from app_bot.keyboards import check_sub_menu, get_referral_keyboard
-from app_bot.text_bot.text import start_text, not_sub_message, instruction_text, api_message
+from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',

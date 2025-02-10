@@ -1,8 +1,8 @@
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from app_bot.config import URL_CHANNEL
 
 
-btn_url_channel = InlineKeyboardButton(text="ПОДПИСАТЬСЯ", url=URL_CHANNEL)
+btn_url_channel = InlineKeyboardButton(text="ПОДПИСАТЬСЯ", url="https://t.me/testtesttestttee4")
 inline_start = [[btn_url_channel]]
 check_sub_menu = InlineKeyboardMarkup(inline_keyboard=inline_start)
 
