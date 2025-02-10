@@ -1,8 +1,11 @@
+import os
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from dotenv import load_dotenv
 
+load_dotenv()
 
-btn_url_channel = InlineKeyboardButton(text="ПОДПИСАТЬСЯ", url="https://t.me/testtesttestttee4")
+btn_url_channel = InlineKeyboardButton(text="ПОДПИСАТЬСЯ", url=os.getenv('CHANNEL_URL'))
 inline_start = [[btn_url_channel]]
 check_sub_menu = InlineKeyboardMarkup(inline_keyboard=inline_start)
 
