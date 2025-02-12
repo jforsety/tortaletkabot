@@ -9,7 +9,7 @@ from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
 from app_bot.api_ai import start_gigachat
-from app_bot.database import add_user, profile_exists, referral_reg
+from app_bot.database import add_user, profile_exists, referral_reg, update_attempts
 from app_bot.keyboards import check_sub_menu, get_referral_keyboard
 from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
 
@@ -81,6 +81,16 @@ async def cmd_profile(message: types.Message):
                                       f"даётся 10 бесплатных запросов*</i>", reply_markup=keyboard)
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
+
+
+@dp.message(Command("update"))
+async def cmd_update(message: types.Message):
+    if message.chat.type == 'private':
+        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
+            if message.from_user.id == int(os.environ.get("ADMIN_ID")):
+                update_attempts()
+            else:
+                logger.info(f"Попытка использовать команду update без необходимых доступов: {message.from_user.id} ")
 
 
 @dp.message()
