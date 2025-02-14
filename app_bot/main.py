@@ -1,17 +1,18 @@
 import logging
 import os
 
+from aiogram.types import CallbackQuery
 from dotenv import load_dotenv
 
-from aiogram import Bot, Dispatcher, types
+from aiogram import Bot, Dispatcher, types, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
 from app_bot.api_ai import start_gigachat
-from app_bot.database import add_user, profile_exists, referral_reg, update_attempts
-from app_bot.keyboards import check_sub_menu, get_referral_keyboard
-from app_bot.text_bot.text import start_text, not_sub_message, instruction_text
+from app_bot.database import add_user, profile_exists, referral_reg, update_attempts, update_attempts_admin
+from app_bot.keyboards import check_sub_menu, get_referral_keyboard, admin_btn
+from app_bot.text_bot.text import start_text, not_sub_message, instruction_text, admin_message, attempts_text
 
 # Включаем логирование, чтобы не пропустить важные сообщения
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -83,14 +84,25 @@ async def cmd_profile(message: types.Message):
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
 
 
-@dp.message(Command("update"))
-async def cmd_update(message: types.Message):
+@dp.message(Command("admin"))
+async def cmd_admin(message: types.Message):
     if message.chat.type == 'private':
-        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
-            if message.from_user.id == int(os.environ.get("ADMIN_ID")):
-                update_attempts()
-            else:
-                logger.info(f"Попытка использовать команду update без необходимых доступов: {message.from_user.id} ")
+        if message.from_user.id == int(os.environ.get("ADMIN_ID")):
+            await message.answer(admin_message, reply_markup=admin_btn)
+        else:
+            logger.info(f"Попытка использовать команду admin без необходимых доступов: {message.from_user.id} ")
+
+
+@dp.callback_query(F.data == "update_1")
+async def start_update_attempts(call: types.CallbackQuery):
+    update_attempts()
+    await call.message.answer(attempts_text)
+
+
+@dp.callback_query(F.data == "update_2")
+async def start_update_admin(call: types.CallbackQuery):
+    update_attempts_admin()
+    await call.message.answer(attempts_text)
 
 
 @dp.message()
