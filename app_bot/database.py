@@ -1,4 +1,5 @@
 import datetime
+import os
 import sqlite3
 
 database = sqlite3.connect("db.sqlite3")
@@ -58,5 +59,12 @@ def update_attempts():
     for id in users_id:
         cursor.execute("UPDATE `app_tortaletka_client` SET attempt = 20 WHERE external_id = ?", (id))
         database.commit()
+
+
+def update_attempts_admin():
+    """Обновление попыток администратора"""
+    admin_id = os.environ.get("ADMIN_ID")
+    cursor.execute("UPDATE `app_tortaletka_client` SET attempt = 100 WHERE external_id = ?", (admin_id,))
+    database.commit()
 
 
