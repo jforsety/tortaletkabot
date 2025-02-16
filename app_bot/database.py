@@ -68,3 +68,12 @@ def update_attempts_admin():
     database.commit()
 
 
+def get_users():
+    """Получение списка всех пользователей"""
+    users_id = cursor.execute("SELECT `external_id` FROM `app_tortaletka_client`").fetchall()
+    users_list = []
+    for i in users_id:
+        users_list.append(i[0])
+    return users_list
+
+
