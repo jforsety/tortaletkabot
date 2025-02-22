@@ -1,7 +1,9 @@
 import logging
 import os
+from datetime import datetime
 
 from aiogram.types import CallbackQuery
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
 
 from aiogram import Bot, Dispatcher, types, F
@@ -35,16 +37,36 @@ def check_sub_channel(chat_member):
         return False
 
 
+# Инициализация планировщика
+scheduler = AsyncIOScheduler(timezone="Europe/Moscow")
+
+
+# Функция регистрации задач
+def setup_scheduler():
+    scheduler.add_job(
+        update_attempts,
+        "cron",
+        hour=1,
+        minute=0,
+        start_date=datetime.now()
+    )
+
+
+# Вызов регистрации задач (при импорте модуля)
+setup_scheduler()
+
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
     referral_id = None
     if message.chat.type == 'private':
-        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
+        if check_sub_channel(
+                await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
             add_user(message)
             if len(message.text.split()) > 1:
                 referral_id = message.text.split()[1].replace("ref_", "")
             if referral_id and referral_id.isdigit():
-                referral_reg(message,referral_id)
+                referral_reg(message, referral_id)
             await message.answer(start_text)
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
@@ -57,7 +79,8 @@ async def cmd_instruction(message: types.Message):
         bot_url=os.environ.get("URL_BOT")
     )
     if message.chat.type == 'private':
-        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
+        if check_sub_channel(
+                await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
             await message.answer(instruction_text, reply_markup=keyboard)
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
@@ -70,13 +93,14 @@ async def cmd_profile(message: types.Message):
         bot_url=os.environ.get("URL_BOT")
     )
     if message.chat.type == 'private':
-        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
+        if check_sub_channel(
+                await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
             profile_list = profile_exists(message)
             await message.answer(text=f"<b>👤 Профиль пользователя:</b>\n\n"
                                       f"<b>ID:</b> {profile_list[0][1]}\n"
                                       f"<b>Имя:</b> {profile_list[0][2]}\n"
                                       f"<b>Рефералы:</b> {profile_list[0][6]}\n"
-                                      # f"<b>Подписка:</b> {profile_list[0][5]}\n"
+                                    # f"<b>Подписка:</b> {profile_list[0][5]}\n"
                                       f"<b>Попытки:</b> {profile_list[0][4]}\n"
                                       f"<i>*За каждого приглашенного друга "
                                       f"даётся 10 бесплатных запросов*</i>", reply_markup=keyboard)
@@ -95,7 +119,7 @@ async def cmd_admin(message: types.Message):
 
 @dp.callback_query(F.data == "update_1")
 async def start_update_attempts(call: types.CallbackQuery):
-    update_attempts()
+    await update_attempts()
     await call.message.answer(attempts_text)
 
 
@@ -108,8 +132,8 @@ async def start_update_admin(call: types.CallbackQuery):
 @dp.message()
 async def message_handler(message: types.Message):
     if message.chat.type == 'private':
-        if check_sub_channel(await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
-            await message.answer(start_gigachat(message),parse_mode="Markdown")
+        if check_sub_channel(
+                await bot.get_chat_member(chat_id=os.environ.get("CHANNEL_ID"), user_id=message.from_user.id)):
+            await message.answer(start_gigachat(message), parse_mode="Markdown")
         else:
             await message.answer(not_sub_message, reply_markup=check_sub_menu)
-
