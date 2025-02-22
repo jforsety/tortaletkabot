@@ -1,6 +1,9 @@
 import datetime
 import os
 import sqlite3
+from pathlib import Path
+
+import aiosqlite
 
 database = sqlite3.connect("db.sqlite3")
 cursor = database.cursor()
@@ -16,7 +19,7 @@ def add_user(message):
                        "?)", (message.from_user.id,
                               message.from_user.first_name,
                               message.from_user.last_name,
-                              30, 0, 0,
+                              20, 0, 0,
                               datetime.datetime.now(),
                               datetime.datetime.now(),
                               message.from_user.username))
@@ -53,12 +56,31 @@ def edit_attempts(message):
     database.commit()
 
 
-def update_attempts():
-    """Обновление попыток пользователей"""
-    users_id = cursor.execute("SELECT `external_id` FROM `app_tortaletka_client`").fetchall()
-    for id in users_id:
-        cursor.execute("UPDATE `app_tortaletka_client` SET attempt = 20 WHERE external_id = ?", (id))
-        database.commit()
+# def update_attempts():
+#     """Синхронное обновление попыток пользователей"""
+#     users_id = cursor.execute("SELECT `external_id` FROM `app_tortaletka_client`").fetchall()
+#     for id in users_id:
+#         cursor.execute("UPDATE `app_tortaletka_client` SET attempt = 20 WHERE external_id = ?", (id))
+#         database.commit()
+
+
+async def update_attempts():
+    """Асинхронное обновление попыток пользователей"""
+    db_path = Path(__file__).parent.parent / "db.sqlite3"
+    async with aiosqlite.connect(db_path) as database:
+        cursor = await database.cursor()
+        # Получаем все external_id
+        await cursor.execute("SELECT external_id FROM app_tortaletka_client")
+        users_id = await cursor.fetchall()
+        # Обновляем попытки для каждого пользователя
+        for id_tuple in users_id:
+            user_id = id_tuple[0]  # Извлекаем значение из кортежа
+            await cursor.execute(
+                "UPDATE `app_tortaletka_client` SET attempt = 20 WHERE external_id = ?",
+                (user_id,)
+            )
+        # Коммитим все изменения одной транзакцией
+        await database.commit()
 
 
 def update_attempts_admin():
