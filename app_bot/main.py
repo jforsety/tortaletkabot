@@ -2,10 +2,10 @@ import logging
 import os
 from datetime import datetime
 
-from aiogram.types import CallbackQuery
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
 
+from aiogram.types import CallbackQuery
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -46,8 +46,8 @@ def setup_scheduler():
     scheduler.add_job(
         update_attempts,
         "cron",
-        hour=1,
-        minute=0,
+        hour=0,
+        minute=1,
         start_date=datetime.now()
     )
 
