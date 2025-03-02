@@ -34,6 +34,10 @@ class BroadcastMessage(models.Model):
         default='text',
         verbose_name="Тип контента"
     )
+    title = models.CharField(
+        verbose_name="Тема",
+        max_length=150
+    )
     text = models.TextField(
         verbose_name="Текст сообщения",
         blank=True,
