@@ -5,6 +5,8 @@ import time
 from pathlib import Path
 
 from aiogram import Bot
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from aiogram.types import FSInputFile
 from asgiref.sync import sync_to_async
 from background_task import background
@@ -20,7 +22,7 @@ load_dotenv()
 
 logger = logging.getLogger(__name__)
 
-bot_instance = Bot(token=os.getenv("TOKEN_BOT"))
+bot_instance = Bot(token=os.getenv("TOKEN_BOT"), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 
 
 @admin.register(Client)
@@ -118,7 +120,7 @@ def send_bg_message(message_id, external_id):
 @admin.register(BroadcastMessage)
 class BroadcastMessageAdmin(admin.ModelAdmin):
     actions = ['send_background_action']  # Добавляем кастомное действие
-    list_display = ['id', 'content_type', 'truncated_text', 'sent']
+    list_display = ['id', 'title', 'content_type', 'truncated_text', 'sent']
 
     # Метод для действия
     @admin.action(description="📨 Отправить сообщение фоном")
