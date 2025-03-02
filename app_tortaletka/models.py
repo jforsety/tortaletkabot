@@ -64,3 +64,6 @@ class BroadcastMessage(models.Model):
     class Meta:
         verbose_name = 'Сообщение'
         verbose_name_plural = 'Сообщения'
+
+    def __str__(self):
+        return f'{self.id} : {self.title}'
