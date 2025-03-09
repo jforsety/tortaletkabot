@@ -150,9 +150,16 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'info.log',
-            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'filename': 'logs/logs_django.log',
+            'maxBytes': 1024 * 1024 * 5,
             'backupCount': 5,
+            'formatter': 'verbose',
+            'encoding': 'utf-8',
+        },
+        'bot_file': {
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': 'logs/logs_bot.log',
             'formatter': 'verbose',
             'encoding': 'utf-8',
         },
@@ -169,6 +176,16 @@ LOGGING = {
         },
         'app_tortaletka': {
             'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'app_bot': {
+            'handlers': ['bot_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'aiogram': {
+            'handlers': ['bot_file'],
             'level': 'INFO',
             'propagate': False,
         },
