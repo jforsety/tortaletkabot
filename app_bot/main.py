@@ -114,7 +114,7 @@ async def cmd_admin(message: types.Message):
         if message.from_user.id == int(os.environ.get("ADMIN_ID")):
             await message.answer(admin_message, reply_markup=admin_btn)
         else:
-            logger.info(f"Попытка использовать команду admin без необходимых доступов: {message.from_user.id} ")
+            logger.info(f"Попытка использовать команду admin без необходимых доступов: {message.from_user.id}")
 
 
 @dp.callback_query(F.data == "update_1")
