@@ -16,9 +16,7 @@ from app_bot.database import add_user, profile_exists, referral_reg, update_atte
 from app_bot.keyboards import check_sub_menu, get_referral_keyboard, admin_btn
 from app_bot.text_bot.text import start_text, not_sub_message, instruction_text, admin_message, attempts_text
 
-# Включаем логирование, чтобы не пропустить важные сообщения
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    filename='./app_bot/Logs_bot/tortaletka_bot.log')
+
 logger = logging.getLogger(__name__)
 
 load_dotenv()
@@ -101,7 +99,7 @@ async def cmd_profile(message: types.Message):
                                       f"<b>Имя:</b> {profile_list[0][2]}\n"
                                       f"<b>Рефералы:</b> {profile_list[0][6]}\n"
                                     # f"<b>Подписка:</b> {profile_list[0][5]}\n"
-                                      f"<b>Попытки:</b> {profile_list[0][4]}\n"
+                                      f"<b>Попытки:</b> {profile_list[0][5]}\n"
                                       f"<i>*За каждого приглашенного друга "
                                       f"даётся 10 бесплатных запросов*</i>", reply_markup=keyboard)
         else:
@@ -112,6 +110,7 @@ async def cmd_profile(message: types.Message):
 async def cmd_admin(message: types.Message):
     if message.chat.type == 'private':
         if message.from_user.id == int(os.environ.get("ADMIN_ID")):
+            logger.info(f"Использование команды admin - {message.from_user.id}")
             await message.answer(admin_message, reply_markup=admin_btn)
         else:
             logger.info(f"Попытка использовать команду admin без необходимых доступов: {message.from_user.id}")
