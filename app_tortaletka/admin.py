@@ -1,4 +1,6 @@
 import asyncio
+import calendar
+import json
 import logging
 import os
 import time
@@ -13,6 +15,9 @@ from background_task import background
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django import forms
+from django.db.models import Count
+from django.db.models.functions import TruncDay
+from django.utils import timezone
 from dotenv import load_dotenv
 
 from tortaletka import settings
@@ -28,8 +33,62 @@ bot_instance = Bot(token=os.getenv("TOKEN_BOT"), default=DefaultBotProperties(pa
 @admin.register(Client)
 class ClientAdmin(admin.ModelAdmin):
     list_display = ("external_id", "first_name", "username", "attempt", "referrals", "last_date")
-    list_filter = ("first_name", "username", "attempt", "referrals")
+    list_filter = ("first_name", "username", "attempt", "referrals", "last_date")
     fields = ("first_name", "username", "attempt")
+
+    def changelist_view(self, request, extra_context=None):
+        now = timezone.localtime(timezone.now())
+        year = now.year
+        month = now.month
+
+        # Границы месяца с учётом времени
+        start_date = timezone.make_aware(timezone.datetime(year, month, 1))
+        last_day = calendar.monthrange(year, month)[1]
+        end_date = start_date.replace(
+            day=last_day,
+            hour=23,
+            minute=59,
+            second=59
+        )
+
+        # Получаем данные с группировкой по локальному времени
+        queryset = Client.objects.annotate(
+            local_day=TruncDay('last_date', tzinfo=timezone.get_current_timezone())
+        ).filter(
+            local_day__range=(start_date, end_date)
+        ).values('local_day').annotate(
+            total=Count('id')
+        ).order_by('local_day')
+
+        # Заполняем пропущенные дни нулями
+        days_in_month = [start_date + timezone.timedelta(days=i) for i in range(last_day)]
+        daily_data = {
+            day.astimezone(timezone.get_current_timezone()).date(): 0
+            for day in days_in_month
+        }
+
+        for entry in queryset:
+            date = entry['local_day'].astimezone(
+                timezone.get_current_timezone()
+            ).date()
+            daily_data[date] = entry['total']
+
+        # Сортировка по дате
+        sorted_dates = sorted(daily_data.keys())
+
+        extra_context = extra_context or {}
+        extra_context['chart_data'] = {
+            'labels': [date.strftime('%d.%m') for date in sorted_dates],
+            'counts': [daily_data[date] for date in sorted_dates]
+        }
+
+        return super().changelist_view(request, extra_context=extra_context)
+
+    class Media:
+        js = [
+            'https://cdn.jsdelivr.net/npm/chart.js',
+            'js/client_activity.js',  # Кастомный JS
+        ]
 
 
 admin.site.unregister(User)
