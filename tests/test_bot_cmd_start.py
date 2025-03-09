@@ -5,7 +5,6 @@ from unittest.mock import AsyncMock, MagicMock, patch
 from aiogram.types import Message, Chat, User
 from aiogram.enums import ChatType
 
-# Замените 'app_bot.main' на реальное имя вашего модуля
 from app_bot.main import (
     cmd_start,
     check_sub_channel,
