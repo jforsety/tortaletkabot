@@ -1,11 +1,10 @@
 import asyncio
-import calendar
-import json
 import logging
 import os
 import time
 from pathlib import Path
-
+from collections import defaultdict
+from dateutil.relativedelta import relativedelta
 from aiogram import Bot
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -41,45 +40,39 @@ class ClientAdmin(admin.ModelAdmin):
         year = now.year
         month = now.month
 
-        # Границы месяца с учётом времени
+        # Границы месяца с учётом временной зоны
         start_date = timezone.make_aware(timezone.datetime(year, month, 1))
-        last_day = calendar.monthrange(year, month)[1]
-        end_date = start_date.replace(
-            day=last_day,
-            hour=23,
-            minute=59,
-            second=59
-        )
+        end_date = start_date + relativedelta(day=31, hour=23, minute=59, second=59)
 
-        # Получаем данные с группировкой по локальному времени
-        queryset = Client.objects.annotate(
-            local_day=TruncDay('last_date', tzinfo=timezone.get_current_timezone())
-        ).filter(
-            local_day__range=(start_date, end_date)
-        ).values('local_day').annotate(
+        # Получаем данные с группировкой по дням
+        queryset = Client.objects.filter(
+            last_date__gte=start_date,
+            last_date__lte=end_date
+        ).annotate(
+            day=TruncDay('last_date', tzinfo=timezone.get_current_timezone())
+        ).values('day').annotate(
             total=Count('id')
-        ).order_by('local_day')
+        ).order_by('day')
 
         # Заполняем пропущенные дни нулями
-        days_in_month = [start_date + timezone.timedelta(days=i) for i in range(last_day)]
-        daily_data = {
-            day.astimezone(timezone.get_current_timezone()).date(): 0
-            for day in days_in_month
-        }
-
+        date_dict = defaultdict(int)
         for entry in queryset:
-            date = entry['local_day'].astimezone(
-                timezone.get_current_timezone()
-            ).date()
-            daily_data[date] = entry['total']
+            date = entry['day'].date()
+            date_dict[date] = entry['total']
 
-        # Сортировка по дате
-        sorted_dates = sorted(daily_data.keys())
+        # Создаем полный список дней месяца
+        chart_labels = []
+        chart_counts = []
+        current_date = start_date.date()
+        while current_date.month == month:
+            chart_labels.append(current_date.strftime('%d.%m'))
+            chart_counts.append(date_dict.get(current_date, 0))
+            current_date += timezone.timedelta(days=1)
 
         extra_context = extra_context or {}
         extra_context['chart_data'] = {
-            'labels': [date.strftime('%d.%m') for date in sorted_dates],
-            'counts': [daily_data[date] for date in sorted_dates]
+            'labels': chart_labels,
+            'counts': chart_counts
         }
 
         return super().changelist_view(request, extra_context=extra_context)
