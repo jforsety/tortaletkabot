@@ -10,7 +10,7 @@ class Client(models.Model):
     premium_status = models.BooleanField(default=False, verbose_name='Премиум статус')
     referrals = models.IntegerField(default=0, verbose_name='Рефералы')
     date_registration = models.DateTimeField(auto_now_add=True, verbose_name='Дата регистрации')
-    last_date = models.DateTimeField(auto_now_add=True, verbose_name='Дата активности')
+    last_date = models.DateTimeField(auto_now=True, verbose_name='Дата активности')
 
     class Meta:
         verbose_name = 'Пользователя бота'
