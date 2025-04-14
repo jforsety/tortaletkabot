@@ -1,7 +1,11 @@
+import asyncio
 import logging
 import os
 from datetime import datetime
 
+from aiogram.exceptions import TelegramAPIError
+from aiogram.fsm.context import FSMContext
+from aiogram.fsm.state import StatesGroup, State
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dotenv import load_dotenv
 
@@ -12,7 +16,8 @@ from aiogram.enums import ParseMode
 from aiogram.filters.command import Command
 
 from app_bot.api_ai import start_gigachat
-from app_bot.database import add_user, profile_exists, referral_reg, update_attempts, update_attempts_admin
+from app_bot.database import add_user, profile_exists, referral_reg, update_attempts, update_attempts_admin, \
+    get_users_id
 from app_bot.keyboards import check_sub_menu, get_referral_keyboard, admin_btn
 from app_bot.text_bot.text import start_text, not_sub_message, instruction_text, admin_message, attempts_text
 
@@ -25,6 +30,9 @@ bot = Bot(token=os.environ.get("TOKEN_BOT"), default=DefaultBotProperties(parse_
 
 # Диспетчер
 dp = Dispatcher()
+
+# Константа для задержки между отправками (в секундах)
+SEND_DELAY = 0.8  # Можно регулировать по необходимости
 
 
 # Функция проверки подписки на канал
@@ -116,16 +124,83 @@ async def cmd_admin(message: types.Message):
             logger.info(f"Попытка использовать команду admin без необходимых доступов: {message.from_user.id}")
 
 
+# Обработчик кнопки "ОБНОВИТЬ ПОПЫТКИ (ВСЕ)"
 @dp.callback_query(F.data == "update_1")
 async def start_update_attempts(call: types.CallbackQuery):
     await update_attempts()
     await call.message.answer(attempts_text)
 
 
+# Обработчик кнопки "ОБНОВИТЬ ПОПЫТКИ (АДМ)"
 @dp.callback_query(F.data == "update_2")
 async def start_update_admin(call: types.CallbackQuery):
     update_attempts_admin()
     await call.message.answer(attempts_text)
+
+
+class SendMessagesState(StatesGroup):
+    waiting_for_content = State()
+
+
+# Обработчик кнопки "ОТПРАВКА СООБЩЕНИЯ (ВСЕ)"
+@dp.callback_query(F.data == "send_messages")
+async def start_send_messages(call: types.CallbackQuery, state: FSMContext):
+    await call.message.answer("Отправьте изображение с текстом для рассылки")
+    await state.set_state(SendMessagesState.waiting_for_content)
+
+
+# Обработчик контента
+@dp.message(SendMessagesState.waiting_for_content, F.photo | F.text)
+async def process_content(message: types.Message, state: FSMContext, bot: Bot):
+    try:
+        if not message.photo:
+            await message.answer("Нужно отправить изображение с текстом!")
+            return
+
+        photo_id = message.photo[-1].file_id
+        caption = message.caption if message.caption else ""
+
+        users = get_users_id()
+        success = 0
+        failed = 0
+        total_users = len(users)
+
+        for index, user in enumerate(users):
+            try:
+                await bot.send_photo(
+                    chat_id=user[0],
+                    photo=photo_id,
+                    caption=caption
+                )
+                success += 1
+            except TelegramAPIError as e:
+                logger.error(f"Произошла ошибка при отправке сообщения пользователю {user[0]}: {e}")
+                failed += 1
+            except Exception as e:
+                logger.error(f"Неизвестная ошибка: {e}")
+                failed += 1
+
+            # Добавляем задержку после каждой итерации, кроме последней
+            if index < total_users - 1:
+                await asyncio.sleep(SEND_DELAY)
+
+        await message.answer(
+            f"Рассылка завершена!\n"
+            f"Успешно: {success}\n"
+            f"Не удалось: {failed}"
+        )
+
+    except Exception as e:
+        logger.error(f"Произошла ошибка при отправке сообщений: {str(e)}")
+        await message.answer(f"Произошла ошибка: {str(e)}")
+    finally:
+        await state.clear()
+
+
+# Обработчик для некорректного ввода
+@dp.message(SendMessagesState.waiting_for_content)
+async def invalid_content(message: types.Message):
+    await message.answer("Пожалуйста, отправьте изображение с текстом!")
 
 
 @dp.message()

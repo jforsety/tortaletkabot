@@ -90,3 +90,8 @@ def update_attempts_admin():
     database.commit()
 
 
+def get_users_id():
+    list_id = cursor.execute("SELECT external_id FROM app_tortaletka_client").fetchall()
+    return list_id
+
+

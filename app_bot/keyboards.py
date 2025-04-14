@@ -14,7 +14,8 @@ check_sub_menu = InlineKeyboardMarkup(inline_keyboard=inline_start)
 # Клавиатура админки в боте
 btn_update_attempts = InlineKeyboardButton(text="ОБНОВИТЬ ПОПЫТКИ (ВСЕ)", callback_data="update_1")
 btn_update_admin = InlineKeyboardButton(text="ОБНОВИТЬ ПОПЫТКИ (АДМ)", callback_data="update_2")
-inline_admin = [[btn_update_attempts], [btn_update_admin]]
+btn_send_messages = InlineKeyboardButton(text="ОТПРАВКА СООБЩЕНИЯ (ВСЕ)", callback_data="send_messages")
+inline_admin = [[btn_update_attempts], [btn_update_admin], [btn_send_messages]]
 admin_btn = InlineKeyboardMarkup(inline_keyboard=inline_admin)
 
 
