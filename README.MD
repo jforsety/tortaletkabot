@@ -82,18 +82,18 @@ _Важно: Добавьте бота админом в целевой кана
 ### Основные команды:
 
 * /start - активация с проверкой подписки
-![img.png](readme/img_6.png)
+* ![img.png](readme/img_6.png)
 * /profile - личный кабинет, баланс попыток и рефералов
-![img.png](readme/img_7.png)
+* ![img.png](readme/img_7.png)
 * /instruction - краткая инструкция
-![img.png](readme/img_8.png)
+* ![img.png](readme/img_8.png)
 * /reset - сброс контекста диалога
 
 ### Реферальная система:
 
 * Нажмите "Пригласить друга" в профиле или инструкции
-![img.png](readme/img_4.png)
-![img.png](readme/img_5.png)
+* ![img.png](readme/img_4.png)
+* ![img.png](readme/img_5.png)
 * Отправьте свою ссылку
 * Получайте +10 попыток за каждого друга
 
