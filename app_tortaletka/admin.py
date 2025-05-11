@@ -192,5 +192,5 @@ class BroadcastMessageAdmin(admin.ModelAdmin):
 
     def truncated_text(self, obj):
         return obj.text[:50] + '...' if obj.text else ''
-    
+
     truncated_text.short_description = 'Текст'
