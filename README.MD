@@ -106,6 +106,12 @@ http://localhost:8000/admin
 ![img_1.png](readme/img_1.png)
 * Массовая рассылка сообщений
 ![img.png](readme/img_2.png)
+* После создания сообщение необходимо его выбрать и использовать действие "Отправить сообщение фоном".
+* ![img.png](readme/img_9.png)
+* Для обработки заданий необходимо использовать команду:
+    ```commandline
+    python manage.py process_tasks
+    ```
 * Редактирование темы оформления
 ![img.png](readme/img_3.png)
 
