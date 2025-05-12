@@ -125,6 +125,7 @@ http://localhost:8000/admin
 * [Aiogram 3.17](https://docs.aiogram.dev/en/v3.20.0.post0/)
 * [Django 5.1](https://docs.djangoproject.com/en/5.2/)
 * [GigaChat API](https://developers.sber.ru/portal/products/gigachat-api)
+* [SQLite](https://www.sqlite.org/)
 
 ## ☎️ Поддержка:
 [Контакты разработчика](https://t.me/jforsety) | [Баг-репорты](https://github.com/jforsety/tortaletkabot/issues)
